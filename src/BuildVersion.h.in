@@ -1,0 +1,2 @@
+#pragma once
+#define RELAY_BUILD_RELEASE_ID "@RELAY_BUILD_RELEASE_ID@"

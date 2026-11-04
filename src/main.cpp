@@ -1,4 +1,5 @@
 #include "RelayUpdater.h"
+#include "BuildVersion.h"
 #include "DiagnosticLog.h"
 #include "RelayPeers.h"
 #include "RelayStreams.h"
@@ -101,6 +102,7 @@ int main(int argc, char** argv) {
     app.setApplicationDisplayName("Relay");
     app.setOrganizationName("Relay");
     app.setApplicationVersion("0.1.0");
+    app.setProperty("relayBuildId", QString::fromLatin1(RELAY_BUILD_RELEASE_ID));
     app.setDesktopFileName(qEnvironmentVariableIsSet("FLATPAK_ID")
         ? qEnvironmentVariable("FLATPAK_ID") : QStringLiteral("relay"));
     QQuickStyle::setStyle("Basic");
