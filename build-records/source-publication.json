@@ -1,0 +1,7 @@
+{
+  "release_id": "20261104T030534Z-1998340",
+  "platform": "linux-x86_64-arch",
+  "suites_passed": 77,
+  "verified_full_source_sha256": "55f49c6cf0fea475984a5d296f76a3eee52a30e0c5cb9b87dd7a530ada1619bc",
+  "publication": "Application source subset; private build metadata, generated binaries and machine configuration excluded."
+}
