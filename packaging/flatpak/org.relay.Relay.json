@@ -1,0 +1,323 @@
+{
+  "app-id": "org.relay.Relay",
+  "runtime": "org.kde.Platform",
+  "runtime-version": "6.10",
+  "sdk": "org.kde.Sdk",
+  "command": "relay",
+  "rename-desktop-file": "relay.desktop",
+  "rename-icon": "relay",
+  "finish-args": [
+    "--share=network",
+    "--share=ipc",
+    "--socket=wayland",
+    "--socket=fallback-x11",
+    "--socket=pulseaudio",
+    "--talk-name=org.freedesktop.Notifications",
+    "--talk-name=org.freedesktop.secrets",
+    "--talk-name=org.kde.kwalletd5",
+    "--talk-name=org.kde.kwalletd6",
+    "--device=all"
+  ],
+  "build-options": {
+    "env": {
+      "CMAKE_BUILD_PARALLEL_LEVEL": "4"
+    }
+  },
+  "cleanup": [
+    "/include",
+    "/lib/pkgconfig",
+    "/lib/cmake",
+    "/share/pkgconfig",
+    "*.a",
+    "*.la"
+  ],
+  "modules": [
+    {
+      "name": "libsodium",
+      "config-opts": [
+        "--disable-static"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/jedisct1/libsodium.git",
+          "commit": "9511c982fb1d046470a8b42aa36556cdb7da15de",
+          "disable-shallow-clone": false
+        }
+      ],
+      "post-install": [
+        "install -Dm644 LICENSE /app/share/relay/licenses/libsodium.txt"
+      ]
+    },
+    {
+      "name": "qrencode",
+      "buildsystem": "cmake-ninja",
+      "config-opts": [
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_INSTALL_LIBDIR=lib",
+        "-DWITH_TOOLS=OFF",
+        "-DWITH_TESTS=OFF",
+        "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/fukuchi/libqrencode.git",
+          "commit": "715e29fd4cd71b6e452ae0f4e36d917b43122ce8",
+          "disable-shallow-clone": false
+        }
+      ],
+      "post-install": [
+        "install -Dm644 COPYING /app/share/relay/licenses/qrencode.txt"
+      ]
+    },
+    {
+      "name": "qtkeychain",
+      "buildsystem": "cmake-ninja",
+      "config-opts": [
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_INSTALL_LIBDIR=lib",
+        "-DBUILD_WITH_QT6=ON",
+        "-DBUILD_TEST_APPLICATION=OFF"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/frankosterfeld/qtkeychain.git",
+          "commit": "ad7344c45a86a4f66cbafc4b081b5f7b876cb0b7",
+          "disable-shallow-clone": false
+        }
+      ],
+      "post-install": [
+        "install -Dm644 COPYING /app/share/relay/licenses/qtkeychain.txt"
+      ]
+    },
+    {
+      "name": "rnnoise",
+      "config-opts": [
+        "--disable-static",
+        "--disable-examples"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://github.com/xiph/rnnoise/releases/download/v0.2/rnnoise-0.2.tar.gz",
+          "sha256": "90fce4b00b9ff24c08dbfe31b82ffd43bae383d85c5535676d28b0a2b11c0d37"
+        }
+      ],
+      "post-install": [
+        "install -Dm644 COPYING /app/share/relay/licenses/rnnoise.txt"
+      ]
+    },
+    {
+      "name": "speexdsp",
+      "config-opts": [
+        "--disable-static"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://downloads.xiph.org/releases/speex/speexdsp-1.2.1.tar.gz",
+          "sha256": "8c777343e4a6399569c72abc38a95b24db56882c83dbdb6c6424a5f4aeb54d3d"
+        }
+      ],
+      "post-install": [
+        "install -Dm644 COPYING /app/share/relay/licenses/speexdsp.txt"
+      ]
+    },
+    {
+      "name": "nlohmann-json",
+      "buildsystem": "cmake-ninja",
+      "config-opts": [
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_INSTALL_LIBDIR=lib",
+        "-DJSON_BuildTests=OFF"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/nlohmann/json.git",
+          "commit": "55f93686c01528224f448c19128836e7df245f72",
+          "disable-shallow-clone": false
+        }
+      ],
+      "post-install": [
+        "install -Dm644 LICENSE.MIT /app/share/relay/licenses/nlohmann-json.txt"
+      ]
+    },
+    {
+      "name": "mlspp",
+      "buildsystem": "cmake-ninja",
+      "config-opts": [
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_INSTALL_LIBDIR=lib",
+        "-DMLS_CXX_NAMESPACE=mlspp",
+        "-DDISABLE_GREASE=ON",
+        "-DTESTING=OFF",
+        "-DBUILD_SHARED_LIBS=OFF",
+        "-DCMAKE_POSITION_INDEPENDENT_CODE=ON",
+        "-DCMAKE_CXX_FLAGS=-Wno-error=maybe-uninitialized"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/cisco/mlspp.git",
+          "commit": "1cc50a124a3bc4e143a787ec934280dc70c1034d",
+          "disable-shallow-clone": false,
+          "disable-submodules": true
+        }
+      ],
+      "post-install": [
+        "install -Dm644 LICENSE /app/share/relay/licenses/mlspp.txt"
+      ]
+    },
+    {
+      "name": "libdave",
+      "buildsystem": "cmake-ninja",
+      "config-opts": [
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_INSTALL_LIBDIR=lib",
+        "-DBUILD_SHARED_LIBS=ON",
+        "-DTESTING=OFF",
+        "-DPERSISTENT_KEYS=OFF"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/discord/libdave.git",
+          "commit": "8de72b1f8a2ac3c5a5270755bb8091a62e3c6169",
+          "disable-shallow-clone": false,
+          "disable-submodules": true
+        }
+      ],
+      "subdir": "cpp",
+      "post-install": [
+        "install -Dm644 ../LICENSE /app/share/relay/licenses/libdave.txt"
+      ]
+    },
+    {
+      "name": "x264",
+      "buildsystem": "simple",
+      "build-commands": [
+        "./configure --prefix=/app --libdir=/app/lib --enable-shared --enable-pic --disable-cli",
+        "make -j4",
+        "make install"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://code.videolan.org/videolan/x264.git",
+          "commit": "b35605ace3ddf7c1a5d67a2eb553f034aef41d55",
+          "disable-shallow-clone": false
+        }
+      ],
+      "post-install": [
+        "install -Dm644 COPYING /app/share/relay/licenses/x264.txt"
+      ]
+    },
+    {
+      "name": "ffmpeg",
+      "buildsystem": "simple",
+      "build-commands": [
+        "./configure --prefix=/app --libdir=/app/lib --disable-static --enable-shared --disable-doc --disable-debug --enable-gpl --enable-libx264 --enable-libopus --enable-libvpx --enable-gnutls --disable-autodetect --enable-vaapi --enable-vdpau --enable-vulkan --enable-libmp3lame",
+        "make -j4",
+        "make install"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/FFmpeg/FFmpeg.git",
+          "commit": "3a0867c2bfda4a4d4309ca1a8cbdc6175e67f587",
+          "disable-shallow-clone": false
+        }
+      ],
+      "post-install": [
+        "install -Dm644 COPYING.GPLv2 /app/share/relay/licenses/ffmpeg.txt"
+      ]
+    },
+    {
+      "name": "relay-test-dbus",
+      "buildsystem": "meson",
+      "config-opts": [
+        "-Ddefault_library=static",
+        "-Dmodular_tests=disabled",
+        "-Dinstalled_tests=false",
+        "-Dapparmor=disabled",
+        "-Dselinux=disabled",
+        "-Dsystemd=disabled",
+        "-Dx11_autolaunch=disabled",
+        "-Dxml_docs=disabled",
+        "-Ddoxygen_docs=disabled",
+        "-Dducktype_docs=disabled",
+        "-Dqt_help=disabled"
+      ],
+      "cleanup": [
+        "*"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://dbus.freedesktop.org/releases/dbus/dbus-1.16.2.tar.xz",
+          "sha256": "0ba2a1a4b16afe7bceb2c07e9ce99a8c2c3508e5dec290dbb643384bd6beb7e2"
+        }
+      ]
+    },
+    {
+      "name": "relay",
+      "buildsystem": "cmake-ninja",
+      "config-opts": [
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_INSTALL_LIBDIR=lib",
+        "-DBUILD_TESTING=ON",
+        "-DRELAY_REQUIRE_DAVE=ON",
+        "-DRELAY_AUDIO_PROCESSING=speex",
+        "-DRELAY_INSTALL_MEDIA_HELPER=OFF",
+        "-DDAVE_INCLUDE_DIR=/app/include",
+        "-DDAVE_LIBRARY=/app/lib/libdave.so",
+        "-DRELAY_MLSPP_TEST_INCLUDE_DIR=/app/include/mlspp"
+      ],
+      "sources": [
+        {
+          "type": "dir",
+          "path": "../..",
+          "skip": [
+            ".git",
+            "build",
+            "bin",
+            "lib",
+            "tools",
+            "screenshots",
+            "*.png",
+            "third_party/libdave/lib",
+            "third_party/libdave/include"
+          ]
+        },
+        {
+          "type": "git",
+          "url": "https://github.com/paullouisageneau/libdatachannel.git",
+          "commit": "6b1e2e620f1e37f0eafeee702eaea0043cb305fd",
+          "dest": "third_party/libdatachannel-source"
+        }
+      ],
+      "post-install": [
+        "install -Dm644 packaging/flatpak/org.relay.Relay.metainfo.xml /app/share/metainfo/org.relay.Relay.metainfo.xml",
+        "install -Dm644 packaging/flatpak/org.relay.Relay.json /app/share/relay/source-manifest.json"
+      ],
+      "run-tests": true,
+      "test-commands": [
+        "dbus-run-session -- ctest --output-on-failure --parallel 3"
+      ],
+      "build-options": {
+        "env": {
+          "QT_QPA_PLATFORM": "offscreen",
+          "QT_QUICK_BACKEND": "software",
+          "PULSE_SERVER": "unix:/tmp/relay-qa-no-audio.sock",
+          "PIPEWIRE_REMOTE": "relay-qa-no-pipewire"
+        },
+        "build-args": [
+          "--share=network"
+        ]
+      }
+    }
+  ]
+}

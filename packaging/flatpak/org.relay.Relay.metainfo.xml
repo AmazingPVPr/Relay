@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.relay.Relay</id>
+  <name>Relay</name>
+  <summary>Native Discord messaging, voice and streaming</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <description><p>An unofficial Qt desktop client for messaging, voice and streaming.</p></description>
+  <launchable type="desktop-id">org.relay.Relay.desktop</launchable>
+  <content_rating type="oars-1.1"/>
+</component>
