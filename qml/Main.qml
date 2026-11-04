@@ -1114,16 +1114,7 @@ ApplicationWindow {
                             ToolTip.delay: 650; ToolTip.text: discord.currentChannelTopic
                         }
                         Text { visible: discord.demoMode && chatColumn.width > 500; text: "PREVIEW"; color: (preferences.highContrast ? "#c7c7cf" : Theme.muted); font.pixelSize: Math.round(9 * preferences.fontScale); font.weight: Font.DemiBold }
-                        Button {
-                            objectName: "relayUpdateButton"
-                            visible: relayUpdater.available
-                            text: relayUpdater.busy ? "Updating…" : "Update"
-                            enabled: !relayUpdater.busy
-                            implicitHeight: 30
-                            ToolTip.visible: hovered
-                            ToolTip.text: relayUpdater.status
-                            onClicked: relayUpdater.install()
-                        }
+                        RelayUpdateButton { service: relayUpdater; implicitHeight: 30 }
                         ActionButton { visible: !window.relayConversationActive && chatColumn.width > 640; iconName: "refresh"; hint: window.forumSelected ? "Refresh posts" : "Refresh messages"; quiet: true; enabled: !discord.loadingMessages && !forumTools.loading && discord.currentChannelId.length > 0; onClicked: window.forumSelected ? forumTools.refresh() : discord.refresh() }
                         MessageSearchField {
                             id: messageSearch
