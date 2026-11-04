@@ -86,3 +86,12 @@ For original OBS video, use a two-second keyframe interval. A new viewer or a vi
 Direct video, stream controls and Opus use separate encrypted WebRTC data channels. They do not enter saved chat histories or MCP. The existing authenticated setup exchanges only connection descriptions. No media is sent through Discord, the manual rendezvous service or TURN for the Relay path. Discord simultaneously receives its own ordinary broadcast. Stream offers go only to connected, accepted Relay contacts; watching requires their explicit click. Disable direct sharing to withdraw offers and disconnect all Relay viewers immediately, while keeping the Discord broadcast active. Stopping the broadcast ends both paths. Disabling a contact/account closes its direct stream along with its text connection.
 
 Direct peers learn each other's network addresses. Each viewer consumes a separate copy of your upload: a 20 Mbps stream with three Relay viewers needs roughly 60 Mbps plus Discord, audio and network overhead. Slow viewers have bounded send/receive queues and skip video until a fresh keyframe after congestion; the client does not silently reduce all viewers to Discord's bitrate. Some NAT/firewall combinations cannot make a direct connection; this version has no TURN fallback. It uses ordered SCTP delivery, so packet loss can increase latency. Live WAN quality and Windows media behavior require testing on the actual clients.
+
+
+## Updating Relay
+
+Use **Check for updates** in the main window or **Settings → Updates**. The button remains visible even before an update is found. Settings shows the actual running build, the available build, the last check, and any download/check error. Checking does not close Relay. **Update and restart** asks for confirmation because calls and streams will disconnect.
+
+Windows uses the native updater bundled with Relay.exe; Python is not required. Launch the installed shortcut or the top-level Relay.exe. The original Windows ZIP preview omitted that launcher, so those users need the replacement installer once. Native Linux installs check at startup through run.sh. Flatpak is a separate package and follows its own installation/update process.
+
+Publishing source commits alone does not publish an app update. Each platform needs its own tested binaries and signed update assets on a published GitHub release. A draft release and a Linux-only package do not supply a Windows update. An unavailable or invalid download keeps the installed version and shows an error when checked in the app.

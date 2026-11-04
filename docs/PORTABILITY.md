@@ -132,3 +132,8 @@ Preserve all dependency notices and corresponding source revisions when
 redistributing packages. Qt and codecs remain dynamically linked so users can
 replace those libraries. FFmpeg/x264 packages may be GPL-enabled; retain their
 notices and matching source locations with the package.
+
+
+### Check for updates inside Relay
+
+The main window always offers **Check for updates**. **Settings → Updates** shows the running build, available build, last check, and errors. **Update and restart** asks before disconnecting calls or streams, and the restart waits for the old process to finish closing. The Windows in-app check uses the native launcher, with no Python requirement. Startup checks continue to work for updater-enabled installations. Newer installed bundles take precedence over older cached versions.
