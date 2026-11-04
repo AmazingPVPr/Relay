@@ -6,6 +6,7 @@ relay_build="$relay_source/build/windows"
 relay_prefix="$relay_build/deps"
 relay_stage="$relay_build/Relay"
 relay_jobs="${RELAY_BUILD_JOBS:-4}"
+relay_release_id="${RELAY_RELEASE_ID:-$(date -u +%Y%m%dT%H%M%SZ)-$$}"
 [[ "$relay_jobs" =~ ^[1-6]$ ]] || exit 64
 while IFS= read -r relay_package; do
     [[ -z "$relay_package" || "$relay_package" == \#* ]] && continue
@@ -29,7 +30,7 @@ if [[ ! -f "$relay_prefix/lib/pkgconfig/rnnoise.pc" ]]; then
 fi
 export PKG_CONFIG_PATH="$(cygpath -m "$relay_prefix/lib/pkgconfig")${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
 python "$relay_source/scripts/build-portable-deps.py" --work "$relay_build/voice" --prefix "$relay_prefix" --jobs "$relay_jobs"
-cmake -S "$relay_source" -B "$relay_build/app" -G Ninja -DCMAKE_BUILD_TYPE=Release \
+cmake -S "$relay_source" -B "$relay_build/app" -G Ninja -DCMAKE_BUILD_TYPE=Release "-DRELAY_BUILD_RELEASE_ID=$relay_release_id" \
     -DCMAKE_PREFIX_PATH="$(cygpath -m "$relay_prefix")" -DRELAY_AUDIO_PROCESSING=speex \
     -DRELAY_REQUIRE_DAVE=ON -DRELAY_DEPLOY_QT=ON -DRELAY_INSTALL_MEDIA_HELPER=OFF -DBUILD_TESTING=ON \
     -DDAVE_INCLUDE_DIR="$(cygpath -m "$relay_prefix/include")" \
