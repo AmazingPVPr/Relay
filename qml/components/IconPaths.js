@@ -1,0 +1,50 @@
+.pragma library
+// Vector paths use a shared 24-unit grid and rounded two-unit strokes.
+function path(name) {
+    const paths = {
+        back: 'M14 5 7 12 14 19M7 12H21',
+        play: 'M8 4 20 12 8 20Z',
+        pause: 'M7 4V20M17 4V20',
+        stop: 'M5 5H19V19H5Z',
+        lock: 'M6 11H18V22H6ZM8 11V6A4 4 0 0 1 16 6V11M12 15V18',
+        emoji: 'M22 12A10 10 0 1 1 2 12A10 10 0 1 1 22 12M7 14Q12 20 17 14M8 8V9M16 8V9',
+        calendar: 'M4 5H20V21H4ZM4 10H20M8 3V7M16 3V7M8 14H10M14 14H16M8 18H10',
+        desktop: 'M3 4H21V17H3ZM8 21H16M12 17V21',
+        mobile: 'M8 2H16Q18 2 18 4V20Q18 22 16 22H8Q6 22 6 20V4Q6 2 8 2ZM11 18H13',
+        web: 'M22 12A10 10 0 1 1 2 12A10 10 0 1 1 22 12M2 12H22M12 2C5 9 5 15 12 22C19 15 19 9 12 2',
+        blocked: 'M22 12A10 10 0 1 1 2 12A10 10 0 1 1 22 12M5 5 19 19',
+        translate: 'M2 4H14M8 2V4M4 4C4 9 8 13 13 15M12 4C12 10 7 14 2 16M14 21 18 11 22 21M16 17H20',
+        pin: 'M9 3H15L14 9 18 13H6L10 9ZM12 13V22',
+        hash: 'M10 4 7 20M17 4 14 20M4 9H21M3 15H20',
+        voice: 'M3 9H7L12 5V19L7 15H3ZM16 8C19 10 19 14 16 16M19 5C24 9 24 15 19 19',
+        mic: 'M9 5A3 3 0 0 1 15 5V11A3 3 0 0 1 9 11ZM5 10V12A7 7 0 0 0 19 12V10M12 19V22M8 22H16',
+        headphones: 'M4 14V11A8 8 0 0 1 20 11V14M5 12H6V20H5A2 2 0 0 1 3 18V14A2 2 0 0 1 5 12ZM19 12H18V20H19A2 2 0 0 0 21 18V14A2 2 0 0 0 19 12Z',
+        settings: 'M9 3H15L16 6 19 7 22 10V14L19 17 16 18 15 21H9L8 18 5 17 2 14V10L5 7 8 6ZM15 12A3 3 0 1 1 9 12A3 3 0 1 1 15 12',
+        chat: 'M5 4H19Q21 4 21 6V15Q21 17 19 17H10L5 21V17H4Q2 17 2 15V7Q2 4 5 4ZM7 9H16M7 12H13',
+        soundboard: 'M4 3H20V21H4ZM8 7H9M15 7H16M8 12H9M15 12H16M8 17H9M15 17H16',
+        video: 'M5 4H19Q21 4 21 6V16Q21 18 19 18H5Q3 18 3 16V6Q3 4 5 4ZM9 21H15M12 18V21',
+        fullscreen: 'M9 3H3V9M15 3H21V9M3 15V21H9M15 21H21V15',
+        expand: 'M4 4H20V20H4ZM4 8H20',
+        minimize: 'M4 4H20V20H4ZM12 12H18V18H12Z',
+        volumeOff: 'M3 9H7L12 5V19L7 15H3ZM17 9 22 14M22 9 17 14',
+        search: 'M16 10A6 6 0 1 1 4 10A6 6 0 1 1 16 10M15 15 21 21',
+        send: 'M3 3 22 12 3 21 6 12ZM6 12H15',
+        disconnect: 'M3 15C7 10 17 10 21 15L18 19 14 17V14M10 14V17L6 19 3 15M19 3V9M16 6H22',
+        logout: 'M10 4H4V20H10M9 12H22M18 8 22 12 18 16',
+        close: 'M6 6 18 18M18 6 6 18',
+        chevron: 'M6 9 12 15 18 9',
+        down: 'M12 4V20M6 14 12 20 18 14',
+        refresh: 'M20 12A8 8 0 1 1 18 6M19 3V8H14',
+        copy: 'M8 8H20V21H8ZM5 17H3V3H16V5',
+        edit: 'M15 4 20 9M4 20 5 15 17 3Q18 2 19 3L21 5Q22 6 21 7L9 19ZM4 20 9 19',
+        userPlus: 'M14 7A4 4 0 1 1 6 7A4 4 0 1 1 14 7M3 21V19A7 7 0 0 1 17 19V21M20 5V11M17 8H23',
+        members: 'M14 7A4 4 0 1 1 6 7A4 4 0 1 1 14 7M3 21V19A7 7 0 0 1 17 19V21M17 4A4 4 0 0 1 17 12M20 15Q23 17 22 21',
+        popout: 'M10 4H4V20H20V14M14 3H21V10M21 3 11 13',
+        return: 'M14 4H20V20H4V14M3 3H10V10M3 3 13 13',
+        link: 'M10 13A5 5 0 0 0 7 4L3 8A5 5 0 0 0 7 16M14 11A5 5 0 0 0 17 20L21 16A5 5 0 0 0 17 8M8 16 16 8'
+    }
+    if (name === 'returnToApp') return paths.return
+    if (name === 'micOff') return paths.mic + 'M3 3 21 21'
+    if (name === 'deafened') return paths.headphones + 'M3 3 21 21'
+    return paths[name] || ''
+}
