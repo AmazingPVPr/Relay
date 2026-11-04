@@ -1,0 +1,9 @@
+{
+  "apiVersion": 1,
+  "id": "org.relay.hiddenchannels",
+  "name": "Show hidden channels",
+  "description": "Show locked channel names and metadata already delivered to Relay. Hidden channels open a metadata panel; their messages and voice remain inaccessible.",
+  "version": "0.1.0",
+  "capabilities": [],
+  "defaultEnabled": false
+}
