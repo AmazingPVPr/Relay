@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Relay
+Comment=Native Discord messaging, voice and streaming
+Exec=relay
+Icon=relay
+Terminal=false
+Type=Application
+Categories=Network;InstantMessaging;
+StartupWMClass=Relay
