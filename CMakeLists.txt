@@ -76,6 +76,7 @@ add_subdirectory("${RELAY_DATACHANNEL_SOURCE}" "relay-datachannel" EXCLUDE_FROM_
 
 
 add_library(relay_core STATIC
+    src/RelayUpdater.cpp src/RelayUpdater.h
     src/addons/AddonIdentityBroker.cpp src/addons/AddonIdentityBroker.h
     ${RELAY_DESKTOP_SOURCES}
     src/RelayDiscordBridge.cpp src/RelayDiscordBridge.h
@@ -179,7 +180,10 @@ target_include_directories(relay_rendezvous_core PUBLIC src)
 qt_add_executable(relay-rendezvous src/relay-rendezvous-main.cpp)
 target_link_libraries(relay-rendezvous PRIVATE relay_rendezvous_core)
 
-qt_add_executable(relay src/RelayUpdater.h src/ImageEditor.cpp src/ImageEditor.h src/DiagnosticLog.h src/WindowLifecycleProbe.cpp src/WindowLifecycleProbe.h src/main.cpp src/SoftwareVideo.cpp src/SoftwareVideo.h src/CrispImage.cpp src/CrispImage.h)
+set(RELAY_BUILD_RELEASE_ID "" CACHE STRING "Verified runtime release identity")
+configure_file(src/BuildVersion.h.in generated/BuildVersion.h @ONLY)
+qt_add_executable(relay src/ImageEditor.cpp src/ImageEditor.h src/DiagnosticLog.h src/WindowLifecycleProbe.cpp src/WindowLifecycleProbe.h src/main.cpp src/SoftwareVideo.cpp src/SoftwareVideo.h src/CrispImage.cpp src/CrispImage.h)
+target_include_directories(relay PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
 add_dependencies(relay relay_obs relay_soundboard relay_hiddenchannels)
 if(WIN32)
     enable_language(RC)
@@ -234,6 +238,9 @@ if(BUILD_TESTING)
         target_link_libraries(${test_name} PRIVATE relay_core Qt6::Test)
         if(test_name STREQUAL "relay_peers_test")
             target_link_libraries(${test_name} PRIVATE relay_rendezvous_core)
+        endif()
+        if(test_name STREQUAL "relay_updater_test")
+            target_link_libraries(${test_name} PRIVATE Qt6::Qml Qt6::Quick Qt6::QuickControls2)
         endif()
         if(test_name STREQUAL "relay_peer_ui_test")
             target_sources(${test_name} PRIVATE src/SoftwareVideo.cpp src/SoftwareVideo.h)

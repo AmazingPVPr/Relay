@@ -4,11 +4,9 @@ relay_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 relay_runtime="$relay_root"
 if [[ -f "$relay_root/updater/relay-updater.py" ]] && command -v python3 >/dev/null && command -v openssl >/dev/null; then
     relay_updater="$relay_root/updater/relay-updater.py"
-    if [[ -f "$relay_root/.relay-updates/current" ]]; then
-        read -r relay_current < "$relay_root/.relay-updates/current" || true
-        if [[ "$relay_current" =~ ^[0-9]{8}T[0-9]{6}Z-[0-9]+$ && -f "$relay_root/.relay-updates/releases/$relay_current/updater/relay-updater.py" ]]; then
-            relay_updater="$relay_root/.relay-updates/releases/$relay_current/updater/relay-updater.py"
-        fi
+    relay_best="$(python3 "$relay_updater" "$relay_root" --select 2>/dev/null)" || relay_best="$relay_root"
+    if [[ -f "$relay_best/updater/relay-updater.py" ]]; then
+        relay_updater="$relay_best/updater/relay-updater.py"
     fi
     relay_selected="$(python3 "$relay_updater" "$relay_root")" || relay_selected="$relay_root"
     [[ -x "$relay_selected/bin/relay" ]] && relay_runtime="$relay_selected"
