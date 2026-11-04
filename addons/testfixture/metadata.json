@@ -1,0 +1,9 @@
+{
+  "apiVersion": 1,
+  "id": "org.relay.fixture",
+  "name": "Native lifecycle fixture",
+  "description": "Test module, never shipped with Relay.",
+  "version": "1.0.0",
+  "capabilities": ["broadcast-source", "share-source"],
+  "defaultEnabled": true
+}
