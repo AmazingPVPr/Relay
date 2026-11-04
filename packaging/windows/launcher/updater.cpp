@@ -22,6 +22,8 @@
 #include <openssl/evp.h>
 #include <openssl/pem.h>
 #include <stdexcept>
+#include <iostream>
+#include <memory>
 #ifdef Q_OS_WIN
 #include <windows.h>
 #endif
@@ -32,7 +34,13 @@ struct UpdateProgress {
 };
 static void require(bool ok,const char* error) { if(!ok) throw std::runtime_error(error); }
 static QByteArray read(const QString& path) { QFile f(path);require(f.open(QIODevice::ReadOnly),"Cannot read update file");return f.readAll(); }
-static bool releaseId(const QString& id) { return QRegularExpression("^[0-9]{8}T[0-9]{6}Z-[0-9]+$").match(id).hasMatch(); }
+static bool releaseId(const QString& id) {
+    bool serial=false;id.mid(17).toULongLong(&serial);
+    return id.size()<=64 && serial && QRegularExpression("^[0-9]{8}T[0-9]{6}Z-[0-9]+$").match(id).hasMatch();
+}
+static bool versionLess(const QString& a,const QString& b) {
+    return a.left(16)==b.left(16) ? a.mid(17).toULongLong()<b.mid(17).toULongLong() : a.left(16)<b.left(16);
+}
 static QString version(const QString& root) { return QJsonDocument::fromJson(read(root+"/build-info.json")).object()["release_id"].toString(); }
 static void verify(const QByteArray& message,const QByteArray& signature,const QByteArray& pem=read(":/updater/release-key.pem")) {
     BIO* bio=BIO_new_mem_buf(pem.data(),int(pem.size()));
@@ -92,13 +100,13 @@ static void extract(const QString& archive,const QString& destination,UpdateProg
         QSaveFile file(path);require(file.open(QIODevice::WriteOnly) && file.write(bytes)==bytes.size() && file.commit(),"Cannot extract Windows update file");
     }
 }
-static QString update(const QString& base,const QString& cache,UpdateProgress& progress) {
+static QString update(const QString& base,const QString& cache,UpdateProgress& progress,bool checkOnly=false,QString* available=nullptr,bool strictErrors=false) {
     QString selected=base;QString selectedId=version(base);
     require(releaseId(selectedId),"Missing Windows build version");
     QFile pointer(cache+"/current.txt");
     if(pointer.open(QIODevice::ReadOnly)) {
         QString id=QString::fromUtf8(pointer.readAll()).trimmed();QString candidate=cache+"/"+id+"/Relay";
-        try { if(releaseId(id) && id>selectedId && QFile::exists(candidate+"/bin/relay.exe") && version(candidate)==id) { selected=candidate;selectedId=id; } } catch(const std::exception&) { /* Fall back to the complete bundled build. */ }
+        try { if(releaseId(id) && versionLess(selectedId,id) && QFile::exists(candidate+"/bin/relay.exe") && version(candidate)==id) { selected=candidate;selectedId=id; } } catch(const std::exception&) { /* Fall back to the complete bundled build. */ }
     }
     if(QApplication::arguments().contains("--no-update"))return selected;
     QLockFile lock(cache+"/update.lock");if(!lock.tryLock(0))return selected;
@@ -119,7 +127,10 @@ static QString update(const QString& base,const QString& cache,UpdateProgress& p
         auto metadata=QJsonDocument::fromJson(message).object();auto id=metadata["release_id"].toString();auto digest=metadata["sha256"].toString();
         require(releaseId(id) && metadata["platform"]=="windows-x86_64" && metadata["archive"]=="Relay-windows-x86_64.zip" &&
                 QRegularExpression("^[0-9a-f]{64}$").match(digest).hasMatch(),"Invalid Windows update metadata");
-        if(id<=selectedId)return selected;
+        QFile::remove(cache+"/last-update-error.txt");
+        if(!versionLess(selectedId,id))return selected;
+        if(available)*available=id;
+        if(checkOnly)return selected;
         progress.setLabelText("Downloading Relay for Windows…");
         QTemporaryDir temp(cache+"/download-XXXXXX");require(temp.isValid(),"Cannot create update folder");
         QString archive=temp.path()+"/Relay.zip";QSaveFile output(archive);require(output.open(QIODevice::WriteOnly),"Cannot save Windows update");
@@ -140,17 +151,52 @@ static QString update(const QString& base,const QString& cache,UpdateProgress& p
         QFile::remove(cache+"/last-update-error.txt");
     } catch(const std::exception& error) {
         QFile log(cache+"/last-update-error.txt");if(log.open(QIODevice::WriteOnly))log.write(error.what());
+        if(strictErrors)throw;
     }
     return selected;
 }
 int main(int argc,char** argv) {
-    QApplication app(argc,argv);QApplication::setOrganizationName("Relay");QApplication::setApplicationName("Relay Windows Updates");
-    const QString base=QDir::cleanPath(QCoreApplication::applicationDirPath()+"/..");
+    bool command=false;
+    for(int i=1;i<argc;++i)if(QByteArray(argv[i])=="--check" || QByteArray(argv[i])=="--install" || QByteArray(argv[i])=="--json")command=true;
+    std::unique_ptr<QCoreApplication> application;
+    if(command)application=std::make_unique<QCoreApplication>(argc,argv);
+    else application=std::make_unique<QApplication>(argc,argv);
+    QCoreApplication::setOrganizationName("Relay");QCoreApplication::setApplicationName("Relay Windows Updates");
+    auto args=QCoreApplication::arguments().mid(1);
+    auto base=qEnvironmentVariable("RELAY_INSTALL_ROOT");
+    if(base.isEmpty())base=QDir::cleanPath(QCoreApplication::applicationDirPath()+"/..");
     const QString cache=QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)+"/Relay/WindowsUpdates";
-    QDir().mkpath(cache);QProgressDialog progress("Checking for Relay updates…","Skip update",0,0);
-    progress.setWindowTitle("Relay");progress.setMinimumDuration(700);progress.setAutoClose(false);
+    QDir().mkpath(cache);
     try {
-        UpdateProgress state{&progress};auto selected=update(base,cache,state);progress.hide();auto args=app.arguments().mid(1);args.removeAll("--no-update");
+        const int restart=args.indexOf("--restart-after");
+        if(restart>=0) {
+            bool valid=false;const auto pid=args.value(restart+1).toULong(&valid);require(valid && pid>1,"Invalid restart process");
+#ifdef Q_OS_WIN
+            HANDLE process=OpenProcess(SYNCHRONIZE,FALSE,DWORD(pid));
+            if(process) {auto result=WaitForSingleObject(process,30000);CloseHandle(process);require(result==WAIT_OBJECT_0,"Relay is still closing. Open it again when it has closed.");}
+            else require(GetLastError()==ERROR_INVALID_PARAMETER,"Could not wait for Relay to close. Open it again manually.");
+#endif
+            args.removeAt(restart+1);args.removeAt(restart);
+        }
+        if(command) {
+            UpdateProgress progress;QString available;
+            const auto selected=update(base,cache,progress,args.contains("--check"),&available,true);
+            QJsonObject result{{"current_version",version(selected)},{"available_version",available},{"runtime_path",selected},{"error",""}};
+            std::cout<<QJsonDocument(result).toJson(QJsonDocument::Compact).constData()<<std::endl;
+            return 0;
+        }
+        QProgressDialog dialog("Checking for Relay updates…","Skip update",0,0);
+        dialog.setWindowTitle("Relay");dialog.setMinimumDuration(700);dialog.setAutoClose(false);
+        UpdateProgress progress{&dialog};auto selected=update(base,cache,progress);dialog.hide();
+        args.removeAll("--no-update");
+        qputenv("RELAY_INSTALL_ROOT",base.toUtf8());
         require(QProcess::startDetached(selected+"/bin/relay.exe",args,selected),"Relay could not start");return 0;
-    } catch(const std::exception& error) {progress.hide();QMessageBox::critical(nullptr,"Relay",QString::fromUtf8(error.what()));return 1;}
+    } catch(const std::exception& error) {
+        if(command) {
+            QJsonObject result{{"current_version",QFile::exists(base+"/build-info.json")?version(base):QString()},{"available_version",""},{"runtime_path",base},{"error",QString::fromUtf8(error.what())}};
+            std::cout<<QJsonDocument(result).toJson(QJsonDocument::Compact).constData()<<std::endl;
+            return 2;
+        }
+        QMessageBox::critical(nullptr,"Relay",QString::fromUtf8(error.what()));return 1;
+    }
 }

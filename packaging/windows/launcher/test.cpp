@@ -8,6 +8,7 @@ int main(int argc,char** argv) {
     QCoreApplication app(argc,argv);std::cerr<<"Core application ready\n";
     try {
         require(releaseId("20261104T000000Z-123") && !releaseId("../../bad") && !releaseId("20261104T000000Z-123/evil"),"Version path validation failed");
+        require(versionLess("20261104T000000Z-99","20261104T000000Z-100") && !versionLess("20261104T000000Z-100","20261104T000000Z-99"),"Numeric release order failed");
         std::cerr<<"Signing key fixture\n"; auto key=EVP_PKEY_Q_keygen(nullptr,nullptr,"ED25519"); require(key,"Cannot generate fixture signing key");
         auto bio=BIO_new(BIO_s_mem());PEM_write_bio_PUBKEY(bio,key);char* raw=nullptr;long length=BIO_get_mem_data(bio,&raw);QByteArray pem(raw,length);BIO_free(bio);
         QByteArray message="signed Windows update fixture";QByteArray signature(64,0);size_t count=64;auto ctx=EVP_MD_CTX_new();
