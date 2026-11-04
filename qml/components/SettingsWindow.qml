@@ -22,7 +22,7 @@ ApplicationWindow {
             {key:"privacy",label:"Data & Privacy",icon:"lock",sections:[]},
             {key:"messaging",label:"Messaging Permissions",icon:"chat",sections:[{key:"content-filters",label:"Content Filters"},{key:"spam-filters",label:"Spam Filters"},{key:"direct-messages",label:"Direct Messages"},{key:"friend-requests",label:"Friend Requests"},{key:"connected-games",label:"Connected Games"},{key:"ignore-block",label:"Ignore & Block"}]},
             {key:"notifications",label:"Notifications",icon:"soundboard",sections:[{key:"overview",label:"Overview"},{key:"sounds",label:"Sounds"},{key:"email",label:"Email"},{key:"advanced",label:"Advanced"}]}]},
-        {title:"Relay Settings",pages:[{key:"addons",label:"Add-ons",icon:"settings",sections:[]},{key:"logs",label:"Logs",icon:"settings",sections:[]},{key:"keybinds",label:"Keybinds",icon:"soundboard",sections:[]}]},
+        {title:"Relay Settings",pages:[{key:"addons",label:"Add-ons",icon:"settings",sections:[]},{key:"logs",label:"Logs",icon:"settings",sections:[]},{key:"updates",label:"Updates",icon:"refresh",sections:[]},{key:"keybinds",label:"Keybinds",icon:"soundboard",sections:[]}]},
         {title:"Billing",pages:[{key:"nitro",label:"Nitro",icon:"emoji",sections:[]},{key:"boosts",label:"Server Boost",icon:"voice",sections:[]},{key:"subscriptions",label:"Subscriptions",icon:"calendar",sections:[]},{key:"gifts",label:"Gift Inventory",icon:"emoji",sections:[]},{key:"billing",label:"Billing",icon:"settings",sections:[]}]},
         {title:"Experience",pages:[
             {key:"voice",label:"Voice & Video",icon:"mic",sections:[{key:"input",label:"Microphone"},{key:"output",label:"Output"},{key:"processing",label:"Voice Processing"},{key:"camera",label:"Camera"},{key:"streaming",label:"Streaming"},{key:"sounds",label:"Sounds"},{key:"soundboard",label:"Soundboard"},{key:"advanced",label:"Advanced"}]},
@@ -197,7 +197,7 @@ ApplicationWindow {
                 id: pageLoader; objectName: "settingsPageLoader"
                 anchors.top: pageHeader.bottom; anchors.bottom: parent.bottom; anchors.horizontalCenter: parent.horizontalCenter; anchors.topMargin: 40; anchors.bottomMargin: 28
                 width: Math.min(700, parent.width - 56)
-                source: ({account:"AccountSettings.qml",messaging:"MessagingPermissionsSettings.qml",appearance:"AppearanceSettings.qml",voice:"AudioSettings.qml",keybinds:"KeybindingsSettings.qml",notifications:"NotificationsSettings.qml",addons:"AddonsSettings.qml",accessibility:"AccessibilitySettings.qml",language:"LanguageSettings.qml",system:"SystemSettings.qml",logs:"LogsSettings.qml"})[settingsWindow.currentPage] || "AccountDataSettings.qml"
+                source: ({account:"AccountSettings.qml",messaging:"MessagingPermissionsSettings.qml",appearance:"AppearanceSettings.qml",voice:"AudioSettings.qml",keybinds:"KeybindingsSettings.qml",notifications:"NotificationsSettings.qml",addons:"AddonsSettings.qml",accessibility:"AccessibilitySettings.qml",language:"LanguageSettings.qml",system:"SystemSettings.qml",logs:"LogsSettings.qml",updates:"UpdatesSettings.qml"})[settingsWindow.currentPage] || "AccountDataSettings.qml"
                 active: settingsWindow.visible
                 onLoaded: Qt.callLater(settingsWindow.applyNavigation)
             }
