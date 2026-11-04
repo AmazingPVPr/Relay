@@ -1,0 +1,1 @@
+{"apiVersion":1,"id":"org.relay.soundboard","name":"Custom soundboard","description":"Keep your own sound effects, preview them, and play them in voice. Microphone mute and deafen are respected.","version":"0.1.0","defaultEnabled":false,"capabilities":["voice-pcm"]}
