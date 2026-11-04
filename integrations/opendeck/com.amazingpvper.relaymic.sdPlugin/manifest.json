@@ -1,0 +1,26 @@
+{
+  "Name": "Relay Microphone",
+  "Description": "Toggle Relay's microphone with a live indicator of Relay's actual voice state.",
+  "Author": "Relay",
+  "Version": "1.0.0",
+  "CodePathLin": "Node.mjs",
+  "Icon": "assets/ready",
+  "Category": "Relay",
+  "OS": [{ "Platform": "linux" }],
+  "Actions": [{
+    "Name": "Relay Microphone",
+    "UUID": "com.amazingpvper.relaymic.toggle",
+    "Icon": "assets/ready",
+    "Tooltip": "Toggle only Relay's microphone. The icon follows Relay's live mute, deafen and voice connection state.",
+    "Controllers": ["Keypad"],
+    "DisableAutomaticStates": true,
+    "SupportedInMultiActions": false,
+    "States": [
+      { "Image": "assets/on.png", "Name": "Live", "ShowTitle": false },
+      { "Image": "assets/muted.png", "Name": "Muted", "ShowTitle": false },
+      { "Image": "assets/offline.png", "Name": "Offline", "ShowTitle": false },
+      { "Image": "assets/deafened.png", "Name": "Deafened", "ShowTitle": false },
+      { "Image": "assets/ready.png", "Name": "Ready", "ShowTitle": false }
+    ]
+  }]
+}
